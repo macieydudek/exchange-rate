@@ -9,8 +9,8 @@ import pl.com.bottega.exchangerate.domain.ExchangeRateRepository;
 public class Configuration {
 
     @Bean
-    public ExchangeCalculator exchangeCalculator() {
-        return new StandardExchangeCalculator();
+    public ExchangeCalculator exchangeCalculator(Calculator calculator) {
+        return new StandardExchangeCalculator(calculator);
     }
 
     @Bean
@@ -30,6 +30,6 @@ public class Configuration {
 
     @Bean
     public ExchangeRateCatalog exchangeRateCatalog() {
-        return new JPQLExchangeCatalog();
+        return new JPQLExchangeRateCatalog();
     }
 }

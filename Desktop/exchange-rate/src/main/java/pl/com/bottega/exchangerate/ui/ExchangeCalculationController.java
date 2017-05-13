@@ -14,17 +14,15 @@ import java.time.LocalDate;
 @RequestMapping("/calculation")
 public class ExchangeCalculationController {
 
-    ExchangeCalculator exchangeCalculator;
+    private ExchangeCalculator exchangeCalculator;
+
+    public ExchangeCalculationController(ExchangeCalculator exchangeCalculator) {
+        this.exchangeCalculator = exchangeCalculator;
+    }
 
 
     @GetMapping
-    public CalculationResult calculate(@PathVariable String date, @PathVariable String from, @PathVariable String to, @PathVariable
-            Double amount) {
-        CalculateCommand cmd = new CalculateCommand();
-        cmd.setDate(LocalDate.parse(date));
-        cmd.setFrom(from);
-        cmd.setTo(to);
-        cmd.setAmount(amount);
+    public CalculationResult calculate(CalculateCommand cmd) {
         return exchangeCalculator.calculate(cmd);
     }
 }

@@ -1,19 +1,16 @@
 package pl.com.bottega.exchangerate.domain.commands;
 
-
-import java.time.LocalDate;
-
 public class CalculateCommand implements Validatable{
-    private LocalDate date;
+    private String date;
     private String from;
     private String to;
     private Double amount;
 
-    public void setDate(LocalDate date) {
+    public void setDate(String date) {
         this.date = date;
     }
 
-    public LocalDate getDate() {
+    public String getDate() {
         return date;
     }
 
@@ -46,28 +43,40 @@ public class CalculateCommand implements Validatable{
         validateDate(errors);
         validateFrom(errors);
         validateTo(errors);
-
-        if (from.equals(to)) {
-            errors.add("from", "must be different than to");
-            errors.add("to", "must be different than from");
-            return;
-        }
-
         validateAmount(errors);
     }
 
     private void validateAmount(ValidationErrors errors) {
-
+        if (amount == null) {
+            errors.add("amount", "is required");
+        }
     }
 
     private void validateTo(ValidationErrors errors) {
-
+        if (to == null) {
+            errors.add("to", "is required");
+        }
     }
 
     private void validateFrom(ValidationErrors errors) {
+        if (from == null) {
+            errors.add("from", "is required");
+        } else {
+            validateNotSameAsTo(errors);
+        }
 
     }
 
+    private void validateNotSameAsTo(ValidationErrors errors) {
+        if (from.equals(to)) {
+            errors.add("from", "must be different than to");
+            errors.add("to", "must be different than from");
+        }
+    }
+
     private void validateDate(ValidationErrors errors) {
+        if (date == null) {
+            errors.add("date", "is required");
+        }
     }
 }

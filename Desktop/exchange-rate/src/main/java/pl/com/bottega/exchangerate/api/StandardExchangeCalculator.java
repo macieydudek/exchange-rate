@@ -7,7 +7,11 @@ import pl.com.bottega.exchangerate.domain.commands.CalculateCommand;
 
 public class StandardExchangeCalculator implements ExchangeCalculator{
 
-    Calculator calculator;
+    private Calculator calculator;
+
+    public StandardExchangeCalculator(Calculator calculator) {
+        this.calculator = calculator;
+    }
 
     @Override
     public CalculationResult calculate(CalculateCommand cmd) {

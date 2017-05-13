@@ -1,35 +1,47 @@
 package pl.com.bottega.exchangerate.domain;
 
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import java.math.BigDecimal;
-import java.time.LocalDate;
 
 @Entity
 public class ExchangeRate {
 
     @Id
-    Long id;
+    @GeneratedValue
+    private Long id;
 
-    private LocalDate date;
+    private String date;
     private String currency;
     private BigDecimal rate;
 
     public ExchangeRate(String date, String currency, BigDecimal rate) {
-        this.date = LocalDate.parse(date);
+        this.date = date;
         this.currency = currency;
         this.rate = rate;
+    }
+
+    ExchangeRate() {
     }
 
     public BigDecimal getRate() {
         return rate;
     }
 
-    public LocalDate getDate() {
+    public String getDate() {
         return date;
     }
 
     public String getCurrency() {
         return currency;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setRate(BigDecimal rate) {
+        this.rate = rate;
     }
 }

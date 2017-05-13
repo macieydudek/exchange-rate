@@ -5,6 +5,7 @@ import pl.com.bottega.exchangerate.api.ExchangeRateCatalog;
 import pl.com.bottega.exchangerate.domain.commands.CalculateCommand;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 
 public class Calculator {
@@ -28,19 +29,36 @@ public class Calculator {
     }
 
     private CalculationResult calculateFromTo(CalculateCommand cmd) {
-
-        return null;
+        ExchangeRate fromRate = prepareFromExchangeRate(cmd);
+        ExchangeRate toRate = prepareToExchangeRate(cmd);
+        BigDecimal calculatedAmount = (new BigDecimal(cmd.getAmount()).multiply(fromRate.getRate())).divide(toRate.getRate(), 2,
+                RoundingMode.HALF_UP);
+        return new CalculationResult(cmd.getFrom(), cmd.getTo(), new BigDecimal(cmd.getAmount()), calculatedAmount, cmd.getDate());
     }
 
     private CalculationResult calculateFrom(CalculateCommand cmd) {
-        return null;
+        ExchangeRate exchangeRate = prepareFromExchangeRate(cmd);
+        BigDecimal calculatedAmount = new BigDecimal(cmd.getAmount()).multiply(exchangeRate.getRate());
+        return new CalculationResult(cmd.getFrom(), MAIN_CURRENCY, new BigDecimal(cmd.getAmount()), calculatedAmount, cmd.getDate());
+    }
+
+    private ExchangeRate prepareFromExchangeRate(CalculateCommand cmd) {
+        ExchangeRateQuery exchangeRateQuery = new ExchangeRateQuery();
+        exchangeRateQuery.setFrom(cmd.getFrom());
+        exchangeRateQuery.setDate(cmd.getDate());
+        return exchangeRateCatalog.get(exchangeRateQuery);
     }
 
     private CalculationResult calculateTo(CalculateCommand cmd) {
-        ExchangeRateQuery exchangeRateQuery = new ExchangeRateQuery(cmd.getTo(), cmd.getDate().toString());
-        ExchangeRate exchangeRate = exchangeRateCatalog.get(exchangeRateQuery);
-        BigDecimal calculatedAmount = new BigDecimal(cmd.getAmount()).multiply(exchangeRate.getRate());
-        LocalDate date = exchangeRate.getDate();
-        return new CalculationResult(MAIN_CURRENCY, cmd.getTo(), new BigDecimal(cmd.getAmount()), calculatedAmount, date);
+        ExchangeRate exchangeRate = prepareToExchangeRate(cmd);
+        BigDecimal calculatedAmount = new BigDecimal(cmd.getAmount()).divide(exchangeRate.getRate(), 2, RoundingMode.HALF_UP);
+        return new CalculationResult(MAIN_CURRENCY, cmd.getTo(), new BigDecimal(cmd.getAmount()), calculatedAmount, cmd.getDate());
+    }
+
+    private ExchangeRate prepareToExchangeRate(CalculateCommand cmd) {
+        ExchangeRateQuery exchangeRateQuery = new ExchangeRateQuery();
+        exchangeRateQuery.setTo(cmd.getTo());
+        exchangeRateQuery.setDate(cmd.getDate());
+        return exchangeRateCatalog.get(exchangeRateQuery);
     }
 }
